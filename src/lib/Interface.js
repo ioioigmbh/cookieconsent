@@ -11,13 +11,15 @@ export default class Interface {
 
   buildStyle() {
     return el('style',
-      '#cconsent-bar, #cconsent-bar * { box-sizing:border-box }', 
-      '#cconsent-bar { background-color:' + window.CookieConsent.config.theme.barColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; padding:15px; text-align:right; font-family:sans-serif; font-size:14px; line-height:18px; position:fixed; bottom:0; left:0; width:100%; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}', 
-      '#cconsent-bar.ccb--hidden {transform: translateY(100%); display:block;}', 
+      '#cconsent-bar, #cconsent-bar * { box-sizing:border-box }',
+      '#cconsent-bar { background-color:' + window.CookieConsent.config.theme.barColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; padding:15px; text-align:right; font-family:sans-serif; font-size:14px; line-height:18px; position:fixed; bottom:0; left:0; width:100%; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}',
+      '#cconsent-bar.consent-given { background-color:' + window.CookieConsent.config.theme.barColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; padding:5px; text-align:right; font-family:sans-serif; font-size:14px; line-height:18px; position:fixed; bottom:0; left:auto; right:0; width:auto; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}',
+      '#cconsent-bar.ccb--hidden {transform: translateY(100%); display:block;}',
       '#cconsent-bar .ccb__wrapper { display:flex; flex-wrap:wrap; justify-content:space-between; max-width:1800px; margin:0 auto;}',
       '#cconsent-bar .ccb__left { align-self:center; text-align:left; margin: 15px 0;}',
       '#cconsent-bar .ccb__right { align-self:center; white-space: nowrap;}',
       '#cconsent-bar .ccb__right > div {display:inline-block; color:#FFF;}',
+      '#cconsent-bar .ccb__center { align-self:center; text-align:center; margin: 5px auto;}',
       '#cconsent-bar a { text-decoration:underline; color:' + window.CookieConsent.config.theme.barTextColor + '; }',
       '#cconsent-bar button { line-height:normal; font-size:14px; border:none; padding:10px 10px; color:' + window.CookieConsent.config.theme.barMainButtonTextColor + '; background-color:' + window.CookieConsent.config.theme.barMainButtonColor + ';}',
       '#cconsent-bar a.ccb__edit { margin-right:15px }',
@@ -72,19 +74,30 @@ export default class Interface {
   }
 
   buildBar() {
-    return el('div#cconsent-bar.ccb--hidden',
-        el(`div.ccb__wrapper`,
-          el('div.ccb__left',
-            el('div.cc-text', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barMainText'))
+    if (!window.CookieConsent.config.cookieExists) {
+      return el('div#cconsent-bar.ccb--hidden',
+          el(`div.ccb__wrapper`,
+            el('div.ccb__left',
+              el('div.cc-text', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barMainText'))
+            ),
+            el('div.ccb__right',
+              el('div.ccb__button',
+                el('a.ccb__edit', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barLinkSetting')),
+                el('button.consent-give', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnAcceptAll'))
+              )
+            )
           ),
-          el('div.ccb__right',
-            el('div.ccb__button',
+        );
+    } else {
+      return el('div#cconsent-bar.ccb--hidden.consent-given',
+          el(`div.ccb__wrapper`,
+            el('div.ccb__center',
               el('a.ccb__edit', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barLinkSetting')),
-              el('button.consent-give', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnAcceptAll'))
+              el('button.consent-revoke', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnRejectAll'))
             )
           )
-        ),
-      );
+        );
+    }
   }
 
   buildModal() {
@@ -96,11 +109,11 @@ export default class Interface {
       for(let service in window.CookieConsent.config.services) {
         (window.CookieConsent.config.services[service].category === category) && list.push(window.CookieConsent.config.services[service]);
       }
-      
+
       if(list.length) {
-        
+
         var listItems = [];
-        
+
         for(let item in list) {
           listItems.push(el('li', Language.getTranslation(list[item], window.CookieConsent.config.language.current, 'name')));
         }
@@ -108,7 +121,7 @@ export default class Interface {
         return [el('div.ccm__list', el('span.ccm__list__title', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'modalAffectedSolutions')), el('ul', listItems))];
       }
     }
-    
+
     function modalTabGroups() {
 
       let contentItems = [];
@@ -118,14 +131,14 @@ export default class Interface {
 
         contentItems.push(el('dl.ccm__tabgroup' + '.' + key + ((window.CookieConsent.config.categories[key].checked) ? '.checked-5jhk' : ''), {'data-category':key},
                             el('dt.ccm__tab-head', Language.getTranslation(window.CookieConsent.config.categories[key], window.CookieConsent.config.language.current, 'name'),
-                              el('a.ccm__tab-head__icon-wedge', 
+                              el('a.ccm__tab-head__icon-wedge',
                                 el(document.createElementNS("http://www.w3.org/2000/svg", "svg"), { version: "1.2", preserveAspectRatio: "none", viewBox: "0 0 24 24", class: "icon-wedge-svg", "data-id": "e9b3c566e8c14cfea38af128759b91a3", style: "opacity: 1; mix-blend-mode: normal; fill: rgb(51, 51, 51); width: 32px; height: 32px;"},
                                   el(document.createElementNS("http://www.w3.org/2000/svg", "path"), { 'xmlns:default': "http://www.w3.org/2000/svg", class: "icon-wedge-angle-down", d: "M17.2,9.84c0-0.09-0.04-0.18-0.1-0.24l-0.52-0.52c-0.13-0.13-0.33-0.14-0.47-0.01c0,0-0.01,0.01-0.01,0.01  l-4.1,4.1l-4.09-4.1C7.78,8.94,7.57,8.94,7.44,9.06c0,0-0.01,0.01-0.01,0.01L6.91,9.6c-0.13,0.13-0.14,0.33-0.01,0.47  c0,0,0.01,0.01,0.01,0.01l4.85,4.85c0.13,0.13,0.33,0.14,0.47,0.01c0,0,0.01-0.01,0.01-0.01l4.85-4.85c0.06-0.06,0.1-0.15,0.1-0.24  l0,0H17.2z", style: "fill: rgb(51, 51, 51);" })
                                 )
                               ),
                             ),
                             el('dd.ccm__tab-content',
-                              el('div.ccm__tab-content__left', 
+                              el('div.ccm__tab-content__left',
                                 ( ! window.CookieConsent.config.categories[key].needed) && el('div.ccm__switch-component', el('div.status-off', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'off')),
                                 el('div.ccm__switch-group',
                                   el('label.ccm__switch',
@@ -158,7 +171,7 @@ export default class Interface {
           el('h2', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'modalMainTitle')),
           el('p',
             Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'modalMainText'),
-            (window.CookieConsent.config.modalMainTextMoreLink) ? el('a', { href: window.CookieConsent.config.modalMainTextMoreLink, target: '_blank', rel: 'noopener noreferrer' }, Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'modalMainTitle')) : null
+            (window.CookieConsent.config.modalMainTextMoreLink) ? el('a', { href: window.CookieConsent.config.modalMainTextMoreLink, target: '_blank', rel: 'noopener noreferrer' }, Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'learnMore')) : null
           ),
           el('div.ccm__cheading__close', '×')
         ),
@@ -220,11 +233,9 @@ export default class Interface {
       that.render('bar', that.buildBar(), (bar) => {
 
         // Show the bar after a while
-        if ( ! window.CookieConsent.config.cookieExists) {
-          setTimeout(() => {
-            bar.classList.remove('ccb--hidden');
-          }, window.CookieConsent.config.barTimeout);
-        }
+        setTimeout(() => {
+          bar.classList.remove('ccb--hidden');
+        }, window.CookieConsent.config.barTimeout);
       });
 
       that.render('modal', that.buildModal());
@@ -240,27 +251,43 @@ export default class Interface {
 
     for(let button of buttonConsentGive) {
       button.addEventListener('click', () => {
-  
+
         // We set config to full consent
         for(let key in window.CookieConsent.config.categories) {
           window.CookieConsent.config.categories[key].wanted =
           window.CookieConsent.config.categories[key].checked = true;
         }
-        
+
         this.writeBufferToDOM();
-  
+
         this.buildCookie((cookie) => {
           this.setCookie(cookie);
         });
-  
+
         this.elements['bar'].classList.add('ccb--hidden');
+
+        setTimeout(() => {
+          this.render('bar', this.buildBar(), (bar) => {
+            // Show the bar after a while
+            bar.classList.remove('ccb--hidden');
+            this.addEventListeners();
+          });
+        }, window.CookieConsent.config.barTimeout);
+
         this.elements['modal'].classList.remove('ccm--visible');
 
         this.modalRedrawIcons();
-  
+
       });
     }
 
+    var buttonConsentRevoke = document.querySelectorAll('.consent-revoke');
+    for(let button of buttonConsentRevoke) {
+      button.addEventListener('click', () => {
+        Utilities.removeCookie();
+        location.reload();
+      });
+    }
 
     // If you click Cookie settings and open modal
     Array.prototype.forEach.call(document.getElementsByClassName('ccb__edit'), (edit) => {
@@ -284,9 +311,9 @@ export default class Interface {
             return parent;
           }
         }
-        
+
         var parentDl = getDlParent(event.target);
-        
+
         if(parentDl.classList.contains('ccm__tabgroup--open')) {
           parentDl.classList.remove('ccm__tabgroup--open');
         } else {
@@ -358,7 +385,7 @@ export default class Interface {
       categories: {},
       services: []
     };
-    
+
     for(let key in window.CookieConsent.config.categories) {
       cookie.categories[key] = {
         wanted: window.CookieConsent.config.categories[key].wanted,
@@ -366,13 +393,14 @@ export default class Interface {
     }
 
     cookie.services = Utilities.listGlobalServices();
-  
+
     if (callback) callback(cookie);
     return cookie;
   }
-  
+
   setCookie(cookie, callback) {
     document.cookie = `cconsent=${JSON.stringify(cookie)}; expires=Thu, 01 Jan 2099 00:00:00 UTC; path=/;`;
+    window.CookieConsent.config.cookieExists = true;
     if (callback) callback();
   }
 }
