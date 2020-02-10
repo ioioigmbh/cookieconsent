@@ -5751,7 +5751,82 @@ function () {
 }();
 
 exports.default = Configuration;
-},{"./Utilities":"/6wJ","lodash/merge":"yubd"}],"ylk/":[function(require,module,exports) {
+},{"./Utilities":"/6wJ","lodash/merge":"yubd"}],"xR4A":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _Utilities = _interopRequireDefault(require("./Utilities"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var RemoveCookies =
+/*#__PURE__*/
+function () {
+  function RemoveCookies() {
+    _classCallCheck(this, RemoveCookies);
+  }
+
+  _createClass(RemoveCookies, [{
+    key: "init",
+    value: function init() {
+      this.removeUnwantedCookies();
+    }
+  }, {
+    key: "removeUnwantedCookies",
+    value: function removeUnwantedCookies() {
+      var cookieList = [];
+      document.cookie.split(';').map(function (a) {
+        cookieList.push(a.split('=')[0].replace(/(^\s*)|(\s*&)/, ''));
+      });
+
+      for (var service in window.CookieConsent.config.services) {
+        if (_Utilities.default.objectType(window.CookieConsent.config.services[service].cookies) === 'Array') {
+          // Remove cookies if they are not wanted by user
+          if (!window.CookieConsent.config.categories[window.CookieConsent.config.services[service].category].wanted) {
+            for (var i in window.CookieConsent.config.services[service].cookies) {
+              var type = _Utilities.default.objectType(window.CookieConsent.config.services[service].cookies[i]);
+
+              if (type === 'String') {
+                if (cookieList.indexOf(window.CookieConsent.config.services[service].cookies[i]) > -1) {
+                  this.removeCookie(window.CookieConsent.config.services[service].cookies[i]);
+                }
+              } else if (type === 'RegExp') {
+                // Searching cookie list for cookies matching specified RegExp
+                for (var c in cookieList) {
+                  if (cookieList[c].match(window.CookieConsent.config.services[service].cookies[i])) {
+                    this.removeCookie(cookieList[c]);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }, {
+    key: "removeCookie",
+    value: function removeCookie(cookie) {
+      // Removing cookies from domain and .domain
+      document.cookie = "".concat(cookie, "=; expires=Thu, 01 Jan 1980 00:00:00 UTC; domain=").concat(window.location.hostname, "; path=/;");
+      document.cookie = "".concat(cookie, "=; expires=Thu, 01 Jan 1980 00:00:00 UTC; domain=.").concat(window.location.hostname, "; path=/;");
+    }
+  }]);
+
+  return RemoveCookies;
+}();
+
+exports.default = RemoveCookies;
+},{"./Utilities":"/6wJ"}],"ylk/":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5770,6 +5845,8 @@ var _LocalCookieFilter = _interopRequireDefault(require("./LocalCookieFilter"));
 var _Interface = _interopRequireDefault(require("./Interface"));
 
 var _Configuration = _interopRequireDefault(require("./Configuration"));
+
+var _RemoveCookies = _interopRequireDefault(require("./RemoveCookies"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5790,10 +5867,12 @@ function () {
     key: "init",
     value: function init(configObject) {
       new _Configuration.default(configObject);
+      var removeCookies = new _RemoveCookies.default();
       var insertScriptFilter = new _InsertScriptFilter.default();
       var scriptTagFilter = new _ScriptTagFilter.default();
       var wrapperFilter = new _WrapperFilter.default();
       var localCookieFilter = new _LocalCookieFilter.default();
+      removeCookies.init();
       insertScriptFilter.init();
       scriptTagFilter.init();
       wrapperFilter.init();
@@ -5809,7 +5888,7 @@ function () {
 }();
 
 exports.default = CookieConsent;
-},{"./InsertScriptFilter":"UWvR","./ScriptTagFilter":"ob2e","./WrapperFilter":"935K","./LocalCookieFilter":"2E//","./Interface":"/Qw2","./Configuration":"duLQ"}],"Focm":[function(require,module,exports) {
+},{"./InsertScriptFilter":"UWvR","./ScriptTagFilter":"ob2e","./WrapperFilter":"935K","./LocalCookieFilter":"2E//","./Interface":"/Qw2","./Configuration":"duLQ","./RemoveCookies":"xR4A"}],"Focm":[function(require,module,exports) {
 "use strict";
 
 require("core-js/es6/symbol");
