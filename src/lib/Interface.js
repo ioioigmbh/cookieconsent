@@ -22,7 +22,8 @@ export default class Interface {
       '#cconsent-bar .ccb__center { align-self:center; text-align:center; margin: 5px auto;}',
       '#cconsent-bar a { text-decoration:underline; color:' + window.CookieConsent.config.theme.barTextColor + '; }',
       '#cconsent-bar button { line-height:normal; font-size:14px; border:none; padding:10px 10px; color:' + window.CookieConsent.config.theme.barMainButtonTextColor + '; background-color:' + window.CookieConsent.config.theme.barMainButtonColor + ';}',
-      '#cconsent-bar a.ccb__edit { margin-right:15px }',
+      '#cconsent-bar button.consent-reject { margin-left: 1em; }',
+      '#cconsent-bar a.ccb__edit { margin: 0 15px; padding: 13px 0; display: inline-block; }',
       '#cconsent-bar a:hover, #cconsent-bar button:hover { cursor:pointer; }',
       '#cconsent-modal { display:none; font-size:14px; line-height:18px; color:#666; width: 100vw; height: 100vh; position:fixed; left:0; top:0; right:0; bottom:0; font-size:14px; background-color:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;}',
       '@media (max-width: 600px) { #cconsent-modal { height: 100% } }',
@@ -83,7 +84,8 @@ export default class Interface {
             el('div.ccb__right',
               el('div.ccb__button',
                 el('a.ccb__edit', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barLinkSetting')),
-                el('button.consent-give', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnAcceptAll'))
+                el('button.consent-give', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnAcceptAll')),
+                el('button.consent-reject', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnRejectAll'))
               )
             )
           ),
@@ -92,8 +94,7 @@ export default class Interface {
       return el('div#cconsent-bar.ccb--hidden.consent-given',
           el(`div.ccb__wrapper`,
             el('div.ccb__center',
-              el('a.ccb__edit', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barLinkSetting')),
-              el('button.consent-revoke', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnRejectAll'))
+              el('a.ccb__edit', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barLinkSetting'))
             )
           )
         );
@@ -281,11 +282,38 @@ export default class Interface {
       });
     }
 
-    var buttonConsentRevoke = document.querySelectorAll('.consent-revoke');
-    for(let button of buttonConsentRevoke) {
+    // If you click No to all cookies
+    var buttonConsentReject = document.querySelectorAll('.consent-reject');
+
+    for(let button of buttonConsentReject) {
       button.addEventListener('click', () => {
-        Utilities.removeCookie();
-        location.reload();
+
+        // We set config to no consent, except strictly necessary cookies
+        for(let key in window.CookieConsent.config.categories) {
+          window.CookieConsent.config.categories[key].wanted =
+          window.CookieConsent.config.categories[key].checked = window.CookieConsent.config.categories[key].needed ? true : false;
+        }
+
+        this.writeBufferToDOM();
+
+        this.buildCookie((cookie) => {
+          this.setCookie(cookie);
+        });
+
+        this.elements['bar'].classList.add('ccb--hidden');
+
+        setTimeout(() => {
+          this.render('bar', this.buildBar(), (bar) => {
+            // Show the bar after a while
+            bar.classList.remove('ccb--hidden');
+            this.addEventListeners();
+          });
+        }, window.CookieConsent.config.barTimeout);
+
+        this.elements['modal'].classList.remove('ccm--visible');
+
+        this.modalRedrawIcons();
+
       });
     }
 
