@@ -22,7 +22,7 @@ export default class Interface {
       '#cconsent-bar .ccb__center { align-self:center; text-align:center; margin: 5px auto;}',
       '#cconsent-bar a { text-decoration:underline; color:' + window.CookieConsent.config.theme.barTextColor + '; }',
       '#cconsent-bar button { margin: 1em .5em; line-height:normal; font-size:14px; border:none; padding:10px 10px; color:' + window.CookieConsent.config.theme.barMainButtonTextColor + '; background-color:' + window.CookieConsent.config.theme.barMainButtonColor + ';}',
-      '#cconsent-bar a.ccb__edit { margin: 1em .5em; padding: 13px 0; display: inline-block; }',
+      '#cconsent-bar a.ccb__edit { margin: 1em .5em; padding: 10px 0; display: inline-block; }',
       '#cconsent-bar a:hover, #cconsent-bar button:hover { cursor:pointer; }',
       '#cconsent-modal { display:none; font-size:14px; line-height:18px; color:#666; width: 100vw; height: 100vh; position:fixed; left:0; top:0; right:0; bottom:0; font-size:14px; background-color:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;}',
       '@media (max-width: 600px) { #cconsent-modal { height: 100% } }',
