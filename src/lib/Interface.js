@@ -16,12 +16,13 @@ export default class Interface {
       '#cconsent-bar.consent-given { background-color:' + window.CookieConsent.config.theme.barColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; padding:5px; text-align:right; font-size:14px; line-height:18px; position:fixed; bottom:0; left:auto; right:0; width:auto; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}',
       '#cconsent-bar.ccb--hidden {transform: translateY(100%); display:block;}',
       '#cconsent-bar .ccb__wrapper { display:flex; flex-wrap:wrap; justify-content:space-between; max-width:1800px; margin:0 auto;}',
-      '#cconsent-bar .ccb__left { align-self:center; text-align:left; margin: 15px 0;}',
+      '#cconsent-bar .ccb__left { align-self:center; text-align:left; margin: 0;}',
       '#cconsent-bar .ccb__right { align-self:center; white-space: nowrap;}',
       '#cconsent-bar .ccb__right > div {display:flex; flex-wrap: wrap; justify-content: space-between; color:#FFF;}',
       '#cconsent-bar .ccb__center { align-self:center; text-align:center; margin: 5px auto;}',
       '#cconsent-bar a { text-decoration:underline; color:' + window.CookieConsent.config.theme.barTextColor + '; }',
       '#cconsent-bar button { margin: 1em .5em; line-height:normal; font-size:14px; border:none; padding:10px 10px; color:' + window.CookieConsent.config.theme.barMainButtonTextColor + '; background-color:' + window.CookieConsent.config.theme.barMainButtonColor + ';}',
+      '#cconsent-bar .cc-text { margin: 1em .5em; padding: 10px 0; display: inline-block; }',
       '#cconsent-bar a.ccb__edit { margin: 1em .5em; padding: 10px 0; display: inline-block; }',
       '#cconsent-bar a:hover, #cconsent-bar button:hover { cursor:pointer; }',
       '#cconsent-modal { display:none; font-size:14px; line-height:18px; color:#666; width: 100vw; height: 100vh; position:fixed; left:0; top:0; right:0; bottom:0; font-size:14px; background-color:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;}',
@@ -78,11 +79,11 @@ export default class Interface {
       return el('div#cconsent-bar.ccb--hidden',
           el(`div.ccb__wrapper`,
             el('div.ccb__left',
-              el('div.cc-text', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barMainText'))
+              el('div.cc-text', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barMainText')),
+              el('a.ccb__edit', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barLinkSetting'))
             ),
             el('div.ccb__right',
               el('div.ccb__button',
-                el('a.ccb__edit', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barLinkSetting')),
                 el('button.consent-give', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnAcceptAll')),
                 el('button.consent-reject', Language.getTranslation(window.CookieConsent.config, window.CookieConsent.config.language.current, 'barBtnRejectAll'))
               )
