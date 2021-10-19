@@ -12,16 +12,17 @@ export default class Interface {
   buildStyle() {
     return el('style',
       '#cconsent-bar, #cconsent-bar * { box-sizing:border-box }',
-      '#cconsent-bar { background-color:' + window.CookieConsent.config.theme.barColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; padding: 0 1em; text-align:right; font-size:14px; line-height:18px; position:fixed; bottom:0; left:0; width:100%; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}',
-      '#cconsent-bar.consent-given { background-color:' + window.CookieConsent.config.theme.barColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; padding:5px; text-align:right; font-size:14px; line-height:18px; position:fixed; bottom:0; left:auto; right:0; width:auto; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}',
+      '#cconsent-bar { align-items: flex-end; background-color:' + window.CookieConsent.config.theme.backgroundColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; display: flex; height: 100%; padding: 0; text-align:right; font-size:14px; line-height:18px; position:fixed; bottom:0; left:0; width:100%; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}',
+      '#cconsent-bar.consent-given { background-color:' + window.CookieConsent.config.theme.barColor + '; color:' + window.CookieConsent.config.theme.barTextColor + '; display: block; height: auto; padding:5px; text-align:right; font-size:14px; line-height:18px; position:fixed; bottom:0; left:auto; right:0; width:auto; z-index:9998; transform: translateY(0); transition: transform .6s ease-in-out; transition-delay: .3s;}',
       '#cconsent-bar.ccb--hidden {transform: translateY(100%); display:block;}',
-      '#cconsent-bar .ccb__wrapper { display:flex; flex-wrap:wrap; justify-content:space-between; max-width:1800px; margin:0 auto;}',
+      '#cconsent-bar .ccb__wrapper { background-color:' + window.CookieConsent.config.theme.barColor + '; display:flex; flex-wrap:wrap; justify-content:space-between; height:50%; max-width:1800px; margin:0 auto; padding: 0 1em; width: 100%; }',
       '#cconsent-bar .ccb__left { align-self:center; text-align:left; margin: 0;}',
       '#cconsent-bar .ccb__right { align-self:center; white-space: nowrap;}',
       '#cconsent-bar .ccb__right > div {display:flex; flex-wrap: wrap; justify-content: space-between; color:#FFF;}',
       '#cconsent-bar .ccb__center { align-self:center; text-align:center; margin: 5px auto;}',
       '#cconsent-bar a { text-decoration:underline; color:' + window.CookieConsent.config.theme.barTextColor + '; }',
-      '#cconsent-bar button { margin: 1em .5em; line-height:normal; font-size:14px; border:none; padding:10px 10px; color:' + window.CookieConsent.config.theme.barMainButtonTextColor + '; background-color:' + window.CookieConsent.config.theme.barMainButtonColor + ';}',
+      '#cconsent-bar button.consent-reject { margin: 1em .5em; line-height:normal; font-size:14px; border:none; padding:10px 10px; color:' + window.CookieConsent.config.theme.barMainButtonTextColor + '; background-color:' + window.CookieConsent.config.theme.barMainButtonColor + ';}',
+      '#cconsent-bar button.consent-give { margin: 1em .5em; line-height:normal; font-size:14px; border:none; padding:10px 10px; color:' + window.CookieConsent.config.theme.barSecondaryButtonTextColor + '; background-color:' + window.CookieConsent.config.theme.barSecondaryButtonColor + ';}',
       '#cconsent-bar .cc-text { margin: 1em .5em; padding: 10px 0; display: inline-block; }',
       '#cconsent-bar a.ccb__edit { margin: 1em .5em; padding: 10px 0; display: inline-block; }',
       '#cconsent-bar a:hover, #cconsent-bar button:hover { cursor:pointer; }',
@@ -321,6 +322,7 @@ export default class Interface {
     Array.prototype.forEach.call(document.getElementsByClassName('ccb__edit'), (edit) => {
       edit.addEventListener('click', () => {
         this.elements['modal'].classList.add('ccm--visible');
+        this.elements['bar'].classList.add('ccb--hidden');
       });
     });
 
@@ -382,7 +384,7 @@ export default class Interface {
       this.buildCookie((cookie) => {
         this.setCookie(cookie, () => {
           this.elements['modal'].classList.remove('ccm--visible');
-          this.elements['bar'].classList.add('ccb--hidden');
+          this.elements['bar'].classList.remove('ccb--hidden');
         });
       });
 
